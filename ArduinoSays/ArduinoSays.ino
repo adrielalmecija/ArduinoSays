@@ -102,7 +102,7 @@ void loop()
          opcion=Dificultad[fin-1]; //solo para Debug luego eliminar
          Serial.print("Numero a elegir "); //solo para Debug luego eliminar
          Serial.println(opcion);
-         //delay(tiempoTono);
+         delay(300);
        }
        else{
         {
@@ -113,6 +113,7 @@ void loop()
      }
 
    }while(fin<contador);
+   delay(1000);
 }
 
 
@@ -128,7 +129,7 @@ void Inicializador()//inicia el juego
 {
   contador=0;
   memset(Dificultad, 0, sizeof(Dificultad)); //reset del array
-
+  tiempoTono = 300;
   Sonar(t, tono1, led1);
   Sonar(t, tono2, led2);
   Sonar(t, tono3, led3);
@@ -152,6 +153,7 @@ void Inicializador()//inicia el juego
           tiempoTono = 100;
           break;                             
   }
+  delay(200);
   for(int i=0;i<4;i++)
   {
     Sonar(t,tonos[i],leds[i]);
@@ -210,11 +212,11 @@ long Leer(int Trigger, int Echo)
 
 bool Sonar(long t,int tono, int led)
 {
-  if(t<3000 && t>0)
+  if(t<DistanciaDeSensado && t>0)
   {
     tone(led, tono, tiempoTono);
     digitalWrite(led , HIGH);   
-    delay(600);
+    delay(tiempoTono);
     digitalWrite(led , LOW);
     return true;
   }
