@@ -1,17 +1,19 @@
 const int Trigger1 = 10;   //Pin digital 2 para el Trigger del sensor
 const int Echo1 = 5;   //Pin digital 3 para el Echo del sensor
-const int led1 = 0;
+const int led1 = 2;
 const int Trigger2 = 11;   
 const int Echo2 = 6;
 const int led2 = 3;
-const int Trigger3 = 13;   
+const int Trigger3 = 13; //se invirtio Trigger3 con Trigger4 por un error en la soldadura
 const int Echo3 = 7; 
 const int led3 = 4;
 const int Trigger4 = 12;   
 const int Echo4 = 8;
 const int led4 = 9;
-const int buzzer = 2;
-long t=1000;//estandar para hacer sonar siempre
+//const int buzzer = 2; variable en desuso 
+const int leds[4] = {led1,led2,led3,led4};
+const int DistanciaDeSensado = 3000;
+long t=1000;// sonido estandar
 long t1; //tiempo que demora en llegar el eco 
 long t2;
 long t3;
@@ -21,6 +23,7 @@ int tono1=450;
 int tono2=1400;
 int tono3=2300;
 int tono4=3500;
+int tonos[4] = {tono1,tono2,tono3,tono4};
 int RandomNum;
 int MaxNivel=9;
 int Dificultad[30];
@@ -125,11 +128,46 @@ void Inicializador()//inicia el juego
 {
   contador=0;
   memset(Dificultad, 0, sizeof(Dificultad)); //reset del array
+
   Sonar(t, tono1, led1);
   Sonar(t, tono2, led2);
   Sonar(t, tono3, led3);
   Sonar(t, tono4, led4);
+  switch (ElegirDificultad())
+  {
+    case 1:
+          MaxNivel = 9;
+          tiempoTono = 300;
+          break;
+    case 2:
+          MaxNivel = 14;
+          tiempoTono = 250;
+          break;
+    case 3:
+          MaxNivel = 19;
+          tiempoTono = 200;
+          break;
+     case 4:
+          MaxNivel = 29;
+          tiempoTono = 100;
+          break;                             
+  }
+  for(int i=0;i<4;i++)
+  {
+    Sonar(t,tonos[i],leds[i]);
+    delay(tiempoTono);
+  }
   delay(1500);  
+}
+
+int ElegirDificultad()
+{
+  int dif;
+  do{
+    dif = Sensores();
+  }while(dif==0);
+  
+  return dif;
 }
 
 
@@ -188,12 +226,18 @@ bool Sonar(long t,int tono, int led)
 
 void Winner(int MaxNivel, int contador)
 {
-         if(contador>MaxNivel)
+    int pos=0;
+      if(contador>MaxNivel)
      {
          for(int i=10;i<3500;i=i+250)
          {
-          tone(led1, i, 200);
+          tone(leds[pos], i, 200);
           delay(200);
+          pos++;
+          if(pos>3)
+          {
+            pos=0;
+          }
          }
          Serial.println("Winner");
          Inicializador();
@@ -202,13 +246,9 @@ void Winner(int MaxNivel, int contador)
 
 void GameOver()
 {
-    Serial.print("Eleccion Incorrecta ");
-    Serial.println(opcion);
-    /*for(int i=3000;i>500;i=i-250)
-    {
-     tone(buzzer, i, 100);
-     delay(100);
-    }*/
+    Serial.print("Eleccion Incorrecta "); //solo para debug
+    Serial.println(opcion); //solo para debug
+    
     digitalWrite(led1 , HIGH);   
     digitalWrite(led2 , HIGH); 
     digitalWrite(led3 , HIGH); 
