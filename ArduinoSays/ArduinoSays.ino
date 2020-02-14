@@ -13,12 +13,13 @@ const int led4 = 9;
 //const int buzzer = 2; variable en desuso 
 const int leds[4] = {led1,led2,led3,led4};
 const int DistanciaDeSensado = 3000;
-long t=1000;// sonido estandar
+long t=1000;// variable dentro del rango de dentencion para hacer sonar Sonar()
 long t1; //tiempo que demora en llegar el eco 
 long t2;
 long t3;
 long t4;
 int tiempoTono = 300;
+int tono=1000;//tono por default
 int tono1=450;
 int tono2=1400;
 int tono3=2300;
@@ -65,7 +66,7 @@ void loop()
      Dificultad[contador]=random(1, 5); // elige un numero random de 1 a 4 (incluyentes)
      Serial.print("Random " );
      Serial.println(Dificultad[contador]);
-     delay(1000);
+     delay(750);
      for(int i=0;i<=contador;i++) //reproduce la secuencia de principio a fin
      {
        switch(Dificultad[i])
@@ -113,7 +114,7 @@ void loop()
      }
 
    }while(fin<contador);
-   delay(1000);
+   
 }
 
 
@@ -159,7 +160,7 @@ void Inicializador()//inicia el juego
     Sonar(t,tonos[i],leds[i]);
     delay(tiempoTono);
   }
-  delay(1500);  
+  delay(750);  
 }
 
 int ElegirDificultad()
@@ -226,10 +227,28 @@ bool Sonar(long t,int tono, int led)
   }  
 }
 
+void MostrarNivel(int nivel)
+{
+  if(nivel>3)
+  {
+    Sonar(t,tono,led4);
+    nivel -= 4;
+    MostrarNivel(nivel);
+  }
+  else
+  {
+    if(nivel>0)
+    {
+    Sonar(t,tono,nivel);
+    }
+  }
+}
+
 void Winner(int MaxNivel, int contador)
 {
     int pos=0;
-      if(contador>MaxNivel)
+    delay(500);
+     if(contador>MaxNivel)
      {
          for(int i=10;i<3500;i=i+250)
          {
@@ -250,6 +269,7 @@ void GameOver()
 {
     Serial.print("Eleccion Incorrecta "); //solo para debug
     Serial.println(opcion); //solo para debug
+    tiempoTono = 300; //restauro el tiempo de tono para usar MostrarNivel
     
     digitalWrite(led1 , HIGH);   
     digitalWrite(led2 , HIGH); 
@@ -264,6 +284,8 @@ void GameOver()
     digitalWrite(led2 , LOW);
     digitalWrite(led3 , LOW);
     digitalWrite(led4 , LOW);
+    delay(1000);
+    MostrarNivel(contador+1);
     
     Serial.println("GAME OVER");
     delay(5000);
