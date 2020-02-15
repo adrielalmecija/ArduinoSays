@@ -12,7 +12,7 @@ const int Echo4 = 8;
 const int led4 = 9;
 //const int buzzer = 2; variable en desuso 
 const int leds[4] = {led1,led2,led3,led4};
-const int DistanciaDeSensado = 3000;
+const int DistanciaDeSensado = 6000;
 long t=1000;// variable dentro del rango de dentencion para hacer sonar Sonar()
 long t1; //tiempo que demora en llegar el eco 
 long t2;
@@ -20,7 +20,7 @@ long t3;
 long t4;
 int tiempoTono = 300;
 int tono=1000;//tono por default
-int tono1=450;
+int tono1=600;
 int tono2=1400;
 int tono3=2300;
 int tono4=3500;
@@ -131,10 +131,11 @@ void Inicializador()//inicia el juego
   contador=0;
   memset(Dificultad, 0, sizeof(Dificultad)); //reset del array
   tiempoTono = 300;
-  Sonar(t, tono1, led1);
-  Sonar(t, tono2, led2);
-  Sonar(t, tono3, led3);
-  Sonar(t, tono4, led4);
+  for(int i=0;i<4;i++)
+  {
+    Sonar(t,tonos[i],leds[i]);
+    delay(tiempoTono);
+  }
   switch (ElegirDificultad())
   {
     case 1:
@@ -232,6 +233,7 @@ void MostrarNivel(int nivel)
   if(nivel>3)
   {
     Sonar(t,tono,led4);
+    delay(tiempoTono+200);
     nivel -= 4;
     MostrarNivel(nivel);
   }
@@ -285,7 +287,7 @@ void GameOver()
     digitalWrite(led3 , LOW);
     digitalWrite(led4 , LOW);
     delay(1000);
-    MostrarNivel(contador+1);
+    MostrarNivel(contador);
     
     Serial.println("GAME OVER");
     delay(5000);
